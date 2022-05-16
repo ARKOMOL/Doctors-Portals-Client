@@ -21,7 +21,7 @@ const MyAppointments = () => {
                     }
                 })
             .then(res =>{
-                console.log('res', res);
+                // console.log('res', res);
                 if (res.status=== 401 || res.status===403 ) {
                     navigate('/')
                     signOut(auth);
@@ -36,7 +36,7 @@ const MyAppointments = () => {
             })
         }
       
-    },[]);
+    });
     return (
         <div>
             <h2 className='text-3xl text-primary text-center py-4'>My Appointments: {appointments.length}</h2>
