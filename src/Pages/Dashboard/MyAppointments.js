@@ -1,18 +1,38 @@
+import { signOut } from 'firebase/auth';
 import React, { useEffect, useState } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
+import { useNavigate } from 'react-router-dom';
 import auth from '../../Firebase/Firebase.init';
 
 const MyAppointments = () => {
     const [appointments,setAppointments]= useState([]);
     const [user] = useAuthState(auth)
-    const url = `http://localhost:5000/booking?patient=${user.email}`;
+    const navigate = useNavigate();
+
     useEffect(()=>{
+        const url = `http://localhost:5000/booking?patient=${user.email}`;
         if (user) {
-            fetch(url)
-            .then(res =>res.json())
+            fetch(url,
+                // verify token 
+                {
+                    method:'GET',
+                    headers:{
+                        'authorization':`Bearer ${localStorage.getItem('accessToken')}`
+                    }
+                })
+            .then(res =>{
+                console.log('res', res);
+                if (res.status=== 401 || res.status===403 ) {
+                    navigate('/')
+                    signOut(auth);
+                    localStorage.removeItem('accessToken')
+                }
+               
+               return  res.json()
+            })
             .then(data =>{
-                console.log(data)
-                setAppointments(data)
+                // console.log(data)
+                setAppointments(data);
             })
         }
       
